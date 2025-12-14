@@ -1,0 +1,13 @@
+streamlit
+pandas
+sqlalchemy
+razorpay
+sentence-transformers
+torch
+openai
+openpyxl
+requests
+
+
+
+
