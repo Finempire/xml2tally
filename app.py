@@ -165,28 +165,28 @@ def load_css():
         /* Form Elements */
         .stTextInput input, .stSelectbox select { border-radius: 8px !important; }
         
-        /* Compact File Uploader - Only Browse Button */
+        /* File Uploader */
         [data-testid="stFileUploader"] {
             padding: 0 !important;
         }
         [data-testid="stFileUploader"] > section {
-            padding: 0 !important;
-            background: transparent !important;
+            padding: 0.75rem !important;
+            background: var(--card-bg) !important;
+            border: 1px dashed var(--border) !important;
+            border-radius: 10px !important;
+            box-shadow: none !important;
+        }
+        [data-testid="stFileUploader"] [data-testid="stFileUploaderDropzone"] {
             border: none !important;
+            background: transparent !important;
         }
-        [data-testid="stFileUploader"] > section > div {
-            display: none !important;
+        [data-testid="stFileUploader"] label {
+            color: var(--text-muted) !important;
+            font-weight: 600 !important;
         }
-        [data-testid="stFileUploader"] > section > button {
-            display: inline-flex !important;
-            width: 100% !important;
+        [data-testid="stFileUploader"] button {
             border-radius: 8px !important;
-        }
-        [data-testid="stFileUploader"] small,
-        [data-testid="stFileUploader"] p,
-        [data-testid="stFileUploader"] span:not(button span),
-        [data-testid="stFileUploaderDropzoneInstructions"] {
-            display: none !important;
+            width: 100% !important;
         }
         
         /* Tabs */
