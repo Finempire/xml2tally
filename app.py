@@ -1538,6 +1538,10 @@ def sync_ledgers_from_tally(host, port, company_name, email):
     Fetches ledger list from Tally and stores in database.
     Returns tuple (success: bool, message: str, ledger_count: int)
     """
+    normalized_host = (str(host or "").strip() or "localhost").replace("http://", "").replace("https://", "").strip("/")
+    normalized_port = int(str(port).strip()) if str(port).strip().isdigit() else port
+    endpoint = f"{normalized_host}:{normalized_port}"
+
     try:
         # Construct Tally XML request to get all ledgers
         tally_request = f'''
@@ -1568,7 +1572,7 @@ def sync_ledgers_from_tally(host, port, company_name, email):
         '''
 
         # Send request to Tally
-        url = f"http://{host}:{port}"
+        url = f"http://{endpoint}"
         headers = {'Content-Type': 'text/xml'}
 
         response = requests.post(url, data=tally_request, headers=headers, timeout=10)
@@ -1631,7 +1635,13 @@ def sync_ledgers_from_tally(host, port, company_name, email):
         return True, f"Successfully synced {len(ledgers)} ledgers from Tally", len(ledgers)
 
     except requests.exceptions.ConnectionError:
-        return False, f"Could not connect to Tally server at {host}:{port}. Please ensure Tally is running with web server enabled.", 0
+        localhost_hint = (
+            " If this app is hosted online, 'localhost' points to the server running this app (not your own computer)."
+            " Use a reachable IP/hostname or tunnel for your Tally instance."
+            if normalized_host in {"localhost", "127.0.0.1"}
+            else ""
+        )
+        return False, f"Could not connect to Tally server at {endpoint}. Please ensure Tally is running with web server enabled.{localhost_hint}", 0
     except requests.exceptions.Timeout:
         return False, "Connection to Tally server timed out. Please try again.", 0
     except Exception as e:
@@ -1642,9 +1652,13 @@ def push_vouchers_to_tally(xml_data, host, port):
     Pushes vouchers directly to Tally server via HTTP POST.
     Returns tuple (success: bool, message: str, voucher_count: int)
     """
+    normalized_host = (str(host or "").strip() or "localhost").replace("http://", "").replace("https://", "").strip("/")
+    normalized_port = int(str(port).strip()) if str(port).strip().isdigit() else port
+    endpoint = f"{normalized_host}:{normalized_port}"
+
     try:
         # Send XML data to Tally server
-        url = f"http://{host}:{port}"
+        url = f"http://{endpoint}"
         headers = {'Content-Type': 'text/xml'}
 
         response = requests.post(url, data=xml_data, headers=headers, timeout=30)
@@ -1712,7 +1726,13 @@ def push_vouchers_to_tally(xml_data, host, port):
             return False, f"Could not parse Tally response. Raw response:\n{response.text[:500]}\n\nParse error: {str(parse_err)}", 0
 
     except requests.exceptions.ConnectionError:
-        return False, f"Could not connect to Tally server at {host}:{port}. Please ensure Tally is running with web server enabled.", 0
+        localhost_hint = (
+            " If this app is hosted online, 'localhost' points to the server running this app (not your own computer)."
+            " Use a reachable IP/hostname or tunnel for your Tally instance."
+            if normalized_host in {"localhost", "127.0.0.1"}
+            else ""
+        )
+        return False, f"Could not connect to Tally server at {endpoint}. Please ensure Tally is running with web server enabled.{localhost_hint}", 0
     except requests.exceptions.Timeout:
         return False, "Connection to Tally server timed out. Please try again.", 0
     except Exception as e:
@@ -1723,6 +1743,10 @@ def fetch_companies_from_tally(host, port):
     Fetches list of company names from Tally server.
     Returns tuple (success: bool, message: str, companies: list)
     """
+    normalized_host = (str(host or "").strip() or "localhost").replace("http://", "").replace("https://", "").strip("/")
+    normalized_port = int(str(port).strip()) if str(port).strip().isdigit() else port
+    endpoint = f"{normalized_host}:{normalized_port}"
+
     try:
         # Construct Tally XML request to get all companies
         tally_request = '''
@@ -1771,7 +1795,7 @@ def fetch_companies_from_tally(host, port):
         '''
 
         # Send request to Tally
-        url = f"http://{host}:{port}"
+        url = f"http://{endpoint}"
         headers = {'Content-Type': 'text/xml'}
 
         response = requests.post(url, data=tally_request, headers=headers, timeout=10)
@@ -1815,7 +1839,13 @@ def fetch_companies_from_tally(host, port):
         return True, f"Successfully detected {len(companies)} company(ies) from Tally", companies
 
     except requests.exceptions.ConnectionError:
-        return False, f"Could not connect to Tally server at {host}:{port}. Please ensure Tally is running with web server enabled.", []
+        localhost_hint = (
+            " If this app is hosted online, 'localhost' points to the server running this app (not your own computer)."
+            " Use a reachable IP/hostname or tunnel for your Tally instance."
+            if normalized_host in {"localhost", "127.0.0.1"}
+            else ""
+        )
+        return False, f"Could not connect to Tally server at {endpoint}. Please ensure Tally is running with web server enabled.{localhost_hint}", []
     except requests.exceptions.Timeout:
         return False, "Connection to Tally server timed out. Please try again.", []
     except Exception as e:
